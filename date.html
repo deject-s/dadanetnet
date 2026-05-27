@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Свидание?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6ee;
+      --rose: #e8637a;
+      --rose-dark: #c94560;
+      --rose-light: #f9c6cf;
+      --sage: #7ba37e;
+      --sage-dark: #5a8a5d;
+      --text: #3d2b2b;
+      --muted: #9e7e7e;
+      --gold: #e8a87c;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 10%, #fde8ec 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 90%, #fce3d8 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, #f5f0ff 0%, transparent 70%),
+        var(--cream);
+      z-index: 0;
+    }
+
+    /* ── FLOATING HEARTS ── */
+    .hearts-bg { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .heart-float {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg) scale(0.6); opacity: 0; }
+      10%  { opacity: 0.35; }
+      90%  { opacity: 0.2; }
+      100% { transform: translateY(-120px) rotate(20deg) scale(1.1); opacity: 0; }
+    }
+
+    /* ── SCREENS ── */
+    .screen {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 10;
+      padding: 2rem;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96) translateY(12px);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 2.5rem;
+      padding: 3.5rem 3rem;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow:
+        0 4px 32px rgba(232,99,122,0.12),
+        0 1px 0 rgba(255,255,255,0.9) inset;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+    .joy-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--rose-dark);
+      margin-bottom: 0.4rem;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .final-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--rose-dark);
+      margin-bottom: 1rem;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      padding: 0.85rem 2.2rem;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s;
+      letter-spacing: 0.02em;
+    }
+    .btn:active { transform: scale(0.95); }
+
+    .btn-yes {
+      background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(232,99,122,0.4), 0 2px 0 rgba(255,255,255,0.2) inset;
+    }
+    .btn-yes:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 32px rgba(232,99,122,0.5);
+    }
+
+    .btn-no {
+      background: #f0e8e8;
+      color: var(--muted);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: fixed;
+      transition: none; /* we handle movement in JS */
+      z-index: 200;
+      pointer-events: auto;
+      will-change: transform;
+    }
+
+    .btn-continue {
+      background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(123,163,126,0.4);
+      margin-top: 1.4rem;
+      width: 100%;
+    }
+    .btn-continue:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 28px rgba(123,163,126,0.5);
+    }
+    .btn-continue:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── BUTTON ROW ── */
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── SELECT ── */
+    .date-select {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border-radius: 1rem;
+      border: 2px solid var(--rose-light);
+      background: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      margin-top: 1.4rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23e8637a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.8rem;
+      transition: border-color 0.2s;
+    }
+    .date-select:focus { border-color: var(--rose); }
+
+    /* ── EMOJI BURST ── */
+    .emoji-row { font-size: 2rem; letter-spacing: 0.15em; margin-bottom: 0.6rem; }
+
+    /* ── CONFETTI ── */
+    #confetti-canvas {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      width: 100%; height: 100%;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--rose-light), var(--rose));
+      border-radius: 999px;
+      margin: 1rem auto 1.4rem;
+    }
+
+    /* ── FINAL CARD EXTRAS ── */
+    .final-hearts { font-size: 1.6rem; letter-spacing: 0.2em; margin: 0.8rem 0; animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+    .detail-box {
+      background: linear-gradient(135deg, #ffeaf0, #fff0f5);
+      border: 1px dashed var(--rose-light);
+      border-radius: 1.2rem;
+      padding: 1rem 1.4rem;
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--rose-dark);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .card { padding: 2.5rem 1.6rem; border-radius: 1.8rem; }
+      .btn-row { flex-direction: column; align-items: center; }
+      .btn { width: 100%; }
+    }
+
+    /* Screen 1 no-btn placeholder keeps layout stable */
+    .no-placeholder { height: 52px; }
+  </style>
+</head>
+<body>
+
+<!-- Floating hearts BG -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ═══════════════ SCREEN 1: HERO ═══════════════ -->
+<div class="screen" id="screen1">
+  <div class="card">
+    <div class="emoji-row">🌸 💌 🌸</div>
+    <h1 class="hero-title">Пошли со мной<br>на свидание?</h1>
+    <div class="divider"></div>
+    <p class="subtitle">Уже всё придумал, осталось только твоё согласие ✨</p>
+    <div class="btn-row">
+      <button class="btn btn-yes" id="btnYes" onclick="goToScreen2()">Да, давай 💕</button>
+    </div>
+    <!-- placeholder for layout balance (btn-no is fixed-positioned) -->
+    <div class="no-placeholder"></div>
+  </div>
+</div>
+
+<!-- The "No" button is fixed so it can escape anywhere on screen -->
+<button class="btn btn-no" id="btnNo">Неет 🙈</button>
+
+<!-- ═══════════════ SCREEN 2: DATE PICKER ═══════════════ -->
+<div class="screen hidden" id="screen2">
+  <div class="card">
+    <div class="emoji-row" style="animation: popIn 0.4s both 0.1s">🎉✨🎊</div>
+    <h2 class="joy-title">Ничесе, урааа!</h2>
+    <p class="subtitle" style="margin-bottom:0">Ты лучшая! Выбери удобную дату 🗓️</p>
+    <div class="divider"></div>
+
+    <select class="date-select" id="dateSelect" onchange="onDateChange()">
+      <option value="">— Выбери дату —</option>
+      <option value="6 июня в 19:00">🌆 6 июня, 19:00</option>
+      <option value="7 июня в 18:00">🌇 7 июня, 18:00</option>
+      <option value="13 июня в 17:00">🌤️ 13 июня, 17:00</option>
+      <option value="14 июня в 18:00">🌸 14 июня, 18:00</option>
+    </select>
+
+    <button class="btn btn-continue" id="btnContinue" disabled onclick="goToScreen3()">
+      Продолжить →
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN 3: FINAL ═══════════════ -->
+<div class="screen hidden" id="screen3">
+  <div class="card">
+    <div class="final-hearts">💖 💗 💖</div>
+    <h2 class="final-title">Круто! Заберу тебя</h2>
+    <div class="detail-box" id="finalDate">…</div>
+    <div class="final-hearts" style="margin-top:1rem">🥂 🌹 ✨</div>
+    <p class="subtitle" style="margin-top:0.6rem">Это будет незабываемо, обещаю!) 🫶</p>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   FLOATING HEARTS BACKGROUND
+═══════════════════════════════════════════ */
+(function spawnHearts() {
+  const container = document.getElementById('heartsBg');
+  const symbols = ['🩷','💕','🌸','✨','💫','🌷','💖','🫶'];
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'heart-float';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+    el.style.animationDuration = (9 + Math.random() * 12) + 's';
+    el.style.animationDelay = (Math.random() * 14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   "NO" BUTTON — CURSOR / TOUCH AVOIDANCE
+═══════════════════════════════════════════ */
+const btnNo = document.getElementById('btnNo');
+let noX, noY, noW, noH;
+
+function placeNoBtn() {
+  const yesRect = document.getElementById('btnYes').getBoundingClientRect();
+  // Place it right of "Yes" button initially
+  noX = yesRect.right + 16;
+  noY = yesRect.top;
+  noW = btnNo.offsetWidth;
+  noH = btnNo.offsetHeight;
+  applyNoPos();
+}
+
+function applyNoPos() {
+  const margin = 10;
+  const maxX = window.innerWidth - noW - margin;
+  const maxY = window.innerHeight - noH - margin;
+  noX = Math.max(margin, Math.min(noX, maxX));
+  noY = Math.max(margin, Math.min(noY, maxY));
+  btnNo.style.left = noX + 'px';
+  btnNo.style.top  = noY + 'px';
+}
+
+function flee(cursorX, cursorY) {
+  const rect = btnNo.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top  + rect.height / 2;
+  const dx = cx - cursorX;
+  const dy = cy - cursorY;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const trigger = 120; // px radius to start fleeing
+
+  if (dist < trigger) {
+    const force = (trigger - dist) / trigger; // 0–1
+    const speed = 180 * force;
+    const angle = Math.atan2(dy, dx);
+    noX += Math.cos(angle) * speed;
+    noY += Math.sin(angle) * speed;
+    applyNoPos();
+  }
+}
+
+// Mouse
+document.addEventListener('mousemove', e => flee(e.clientX, e.clientY));
+btnNo.addEventListener('mousedown',   e => flee(e.clientX - 60, e.clientY - 60));
+
+// Touch
+btnNo.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  flee(t.clientX, t.clientY);
+}, { passive: false });
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  flee(t.clientX, t.clientY);
+}, { passive: true });
+
+// Smooth repositioning via rAF
+let rafId;
+function smoothFlee() {
+  // nothing extra — positions applied instantly for snappiness
+  rafId = requestAnimationFrame(smoothFlee);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(placeNoBtn, 100);
+  rafId = requestAnimationFrame(smoothFlee);
+});
+window.addEventListener('resize', placeNoBtn);
+
+/* ═══════════════════════════════════════════
+   SCREEN TRANSITIONS
+═══════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+}
+
+function goToScreen2() {
+  btnNo.style.display = 'none';
+  cancelAnimationFrame(rafId);
+  showScreen('screen2');
+  launchConfetti(60); // small burst on "Yes"
+}
+
+function onDateChange() {
+  const sel = document.getElementById('dateSelect');
+  document.getElementById('btnContinue').disabled = !sel.value;
+}
+
+function goToScreen3() {
+  const sel = document.getElementById('dateSelect');
+  const chosen = sel.value;
+  if (!chosen) return;
+
+  document.getElementById('finalDate').textContent = chosen + ' !! 💕';
+  showScreen('screen3');
+  launchConfetti(200); // big burst on final screen
+
+  // Send data (webhook / backend)
+  sendData(chosen);
+}
+
+/* ═══════════════════════════════════════════
+   DATA SENDING
+═══════════════════════════════════════════ */
+async function sendData(chosenDate) {
+  const payload = {
+    chosen_date: chosenDate,
+    sent_at: new Date().toISOString(),
+    user_agent: navigator.userAgent
+  };
+
+  // 1) Try local backend (if running with Node.js)
+  try {
+    const res = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(3000)
+    });
+    if (res.ok) { console.log('✅ Saved to backend'); return; }
+  } catch (_) { /* backend not running — that's fine */ }
+
+  // 2) Fallback: webhook (replace URL with your Make.com / n8n / Telegram)
+  const WEBHOOK_URL = ''; // 👈 вставь сюда свой webhook URL
+  if (WEBHOOK_URL) {
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      console.log('✅ Sent to webhook');
+    } catch (e) { console.warn('Webhook error:', e); }
+  }
+}
+
+/* ═══════════════════════════════════════════
+   CONFETTI ENGINE
+═══════════════════════════════════════════ */
+(function confettiEngine() {
+  const canvas  = document.getElementById('confetti-canvas');
+  const ctx     = canvas.getContext('2d');
+  let particles = [];
+  let running   = false;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = ['#e8637a','#f9c6cf','#7ba37e','#e8a87c','#b8d4e8','#f5e6ff','#fff'];
+
+  function Particle(x, y) {
+    this.x  = x ?? Math.random() * canvas.width;
+    this.y  = y ?? -10;
+    this.vx = (Math.random() - 0.5) * 7;
+    this.vy = Math.random() * 4 + 2;
+    this.r  = Math.random() * 7 + 3;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.shape = Math.random() > 0.5 ? 'circle' : 'rect';
+    this.rot   = Math.random() * Math.PI * 2;
+    this.rotV  = (Math.random() - 0.5) * 0.2;
+    this.alpha = 1;
+    this.life  = 1;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle   = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      if (p.shape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
+      }
+      ctx.restore();
+    });
+  }
+
+  function update() {
+    particles.forEach((p, i) => {
+      p.x   += p.vx;
+      p.y   += p.vy;
+      p.vy  += 0.12; // gravity
+      p.vx  *= 0.99;
+      p.rot += p.rotV;
+      p.life -= 0.008;
+      p.alpha = Math.max(0, p.life);
+    });
+    particles = particles.filter(p => p.life > 0 && p.y < canvas.height + 20);
+  }
+
+  function loop() {
+    if (!running && particles.length === 0) return;
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.launchConfetti = function(count = 100, cx, cy) {
+    const x = cx ?? canvas.width / 2;
+    const y = cy ?? canvas.height * 0.35;
+    for (let i = 0; i < count; i++) {
+      const p = new Particle(
+        x + (Math.random() - 0.5) * 200,
+        y + (Math.random() - 0.5) * 80
+      );
+      particles.push(p);
+    }
+    if (!running) { running = true; loop(); }
+    setTimeout(() => { running = false; }, 4000);
+  };
+})();
+</script>
+</body>
+</html>

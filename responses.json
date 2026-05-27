@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1779862489683,
+    "chosen_date": "7 июня в 18:00",
+    "sent_at": "2026-05-27T06:14:49.525Z",
+    "ip": "::1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 OPR/131.0.0.0 (Edition std-2)"
+  },
+  {
+    "id": 1779862733930,
+    "chosen_date": "7 июня в 18:00",
+    "sent_at": "2026-05-27T06:18:53.894Z",
+    "ip": "::1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 OPR/131.0.0.0 (Edition std-2)"
+  }
+]
