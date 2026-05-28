@@ -267,11 +267,11 @@
 <div class="screen" id="screen1">
   <div class="card">
     <div class="emoji-row">🌸 💌 🌸</div>
-    <h1 class="hero-title">Пошли со мной<br>на свидание?</h1>
+    <h1 class="hero-title">Пошли <br>на свидание?</h1>
     <div class="divider"></div>
-    <p class="subtitle">Уже всё придумал, осталось только твоё согласие ✨</p>
+    <p class="subtitle">Я уже всё придумал </p>
     <div class="btn-row">
-      <button class="btn btn-yes" id="btnYes" onclick="goToScreen2()">Да, давай 💕</button>
+      <button class="btn btn-yes" id="btnYes" onclick="goToScreen2()">Да да</button>
     </div>
     <!-- placeholder for layout balance (btn-no is fixed-positioned) -->
     <div class="no-placeholder"></div>
@@ -279,22 +279,26 @@
 </div>
 
 <!-- The "No" button is fixed so it can escape anywhere on screen -->
-<button class="btn btn-no" id="btnNo">Неет 🙈</button>
+<button class="btn btn-no" id="btnNo">Нет нет 🙈</button>
 
 <!-- ═══════════════ SCREEN 2: DATE PICKER ═══════════════ -->
 <div class="screen hidden" id="screen2">
   <div class="card">
     <div class="emoji-row" style="animation: popIn 0.4s both 0.1s">🎉✨🎊</div>
     <h2 class="joy-title">Ничесе, урааа!</h2>
-    <p class="subtitle" style="margin-bottom:0">Ты лучшая! Выбери удобную дату 🗓️</p>
+    <p class="subtitle" style="margin-bottom:0">Выбери удобную дату 🗓️</p>
     <div class="divider"></div>
 
     <select class="date-select" id="dateSelect" onchange="onDateChange()">
       <option value="">— Выбери дату —</option>
-      <option value="6 июня в 19:00">🌆 6 июня, 19:00</option>
-      <option value="7 июня в 18:00">🌇 7 июня, 18:00</option>
+      <option value="5 июня в 19:00">🌆 5 июня, 19:00</option>
+      <option value="6 июня в 19:00">🌇 6 июня, 19:00</option>
+      <option value="7 июня в 19:00">🌇 7 июня, 19:00</option>
+      <option value="12 июня в 18:00">🌤️ 12 июня, 18:00</option>
       <option value="13 июня в 17:00">🌤️ 13 июня, 17:00</option>
       <option value="14 июня в 18:00">🌸 14 июня, 18:00</option>
+      <option value="20 июня в 18:00">🌸 20 июня, 18:00</option>
+      <option value="21 июня в 18:00">🌸 21 июня, 18:00</option>
     </select>
 
     <button class="btn btn-continue" id="btnContinue" disabled onclick="goToScreen3()">
